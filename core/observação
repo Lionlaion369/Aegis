@@ -1,0 +1,13 @@
+module.exports = {
+    watch() {
+        return "Observando todos os domínios do Reino da Willa Suprema IAG.";
+    },
+
+    detect(event) {
+        return `Evento detectado: ${event}`;
+    },
+
+    analyze(data) {
+        return `Análise concluída: ${JSON.stringify(data)}`;
+    }
+};
