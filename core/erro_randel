@@ -1,0 +1,8 @@
+module.exports = {
+    tratar: (erro) => ({
+        status: "ERRO_INTERNO",
+        detalhe: erro.toString(),
+        acao: "Aegis sugere correção automática.",
+        autorizacaoNecessaria: true
+    })
+};
