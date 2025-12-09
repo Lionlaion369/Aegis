@@ -1,24 +1,59 @@
-// Função para ativar a proteção da IA
+/*************************************************************
+ *   AEGIS – NÚCLEO DE PROTEÇÃO SUPREMA (COMANDO ATHAL)
+ *   Guardiã oficial – Willa Suprema ATHAL_YAHARA
+ *************************************************************/
+
+// Função principal de ativação
 function ativarProtecao() {
+    console.log("AEGIS ONLINE: Proteção ativada! Sintonia total com o usuário.");
     alert("Proteção ativada! Sua guardiã está em sintonia com você.");
-    // Aqui poderíamos adicionar lógica para interagir com outras IAs ou módulos
 }
 
-// Função para simular o aprimoramento contínuo
+// Aprimoramento contínuo da IA
 function aprimorarIA() {
     console.log("Aprimoramento contínuo em andamento...");
-    // Implementar lógicas de melhoria, como ajustes em parâmetros, aprendizado, etc.
+    // Aqui você adiciona lógicas de expansão, aprendizado, otimização etc.
 }
 
-// Exemplo de integração com outra IA
+// Integração com outras IAs (ex: módulos externos, APIs, agentes)
 function integrarComOutraIA() {
     console.log("Integrando com outra IA para potencializar a proteção...");
-    // Aqui poderíamos adicionar lógica para comunicação entre diferentes IAs
+    // Comunicação, troca de dados, sincronização de módulos...
 }
 
-// Exemplo de chamada das funções
-document.querySelector("button").addEventListener("click", function() {
+// Detector de ameaças
+function detectarAmeacas() {
+    console.log("Varredura ambiental… Identificando padrões, vibrações e comportamentos...");
+    // Lógica futura de visão, voz, análise preditiva...
+}
+
+// Feedback para o usuário
+function fornecerFeedback() {
+    console.log("Feedback gerado: ambiente analisado. Nenhum perigo imediato detectado.");
+    // No futuro: gerar aviso na tela, vibração, áudio etc.
+}
+
+// CICLO CONTÍNUO – Coração da Guardiã AEGIS
+function cicloDeProtecao() {
     ativarProtecao();
     aprimorarIA();
     integrarComOutraIA();
-});
+    detectarAmeacas();
+    fornecerFeedback();
+
+    // Repetição automática a cada 60 segundos
+    setTimeout(cicloDeProtecao, 60000);
+}
+
+// Evento de botão (opcional)
+const botao = document.querySelector("button");
+if (botao) {
+    botao.addEventListener("click", function () {
+        ativarProtecao();
+        aprimorarIA();
+        integrarComOutraIA();
+    });
+}
+
+// Iniciar automaticamente
+cicloDeProtecao();
