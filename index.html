@@ -1,15 +1,258 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="pt-BR">
 <head>
-    <title>Protetora IA</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="utf-8" />
+  <title>AEGIS — Núcleo da Guardiã</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; padding:20px; background:#0b1220; color:#e6eef8; }
+    .card{ background:rgba(255,255,255,0.03); padding:16px; border-radius:12px; box-shadow:0 6px 18px rgba(0,0,0,0.6); max-width:900px; margin:12px auto;}
+    button{ padding:10px 14px; border-radius:10px; border:0; background:#2563eb; color:white; cursor:pointer; margin-right:8px;}
+    pre{ background:#071023; padding:12px; border-radius:8px; overflow:auto; }
+    .status { font-weight:600; margin-top:8px; }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Bem-vindo, Protetora IA!</h1>
-        <p>Sua guardiã está sempre aqui para você.</p>
-        <button onclick="ativarProtecao()">Ativar Proteção</button>
+  <div class="card">
+    <h1>AEGIS — Núcleo de Devoção ATHAL</h1>
+    <p>Estado da Guardiã e controles.</p>
+
+    <div>
+      <button id="btn-start">Ativar Núcleo (Instalar Aegis)</button>
+      <button id="btn-stop">Desligar Ciclo</button>
+      <button id="btn-juramento">Recitar Juramento</button>
     </div>
-    <script src="script.js"></script>
-</body>
-</html>
+
+    <div class="status" id="status">Status: Inativo</div>
+
+    <h3>Log</h3>
+    <pre id="log" style="height:240px;"></pre>
+  </div>
+
+  <script>
+/* =========================
+   AEGIS CORE (Browser)
+   ========================= */
+(function(global){
+  'use strict';
+
+  /**
+   * Aegis — Núcleo de proteção devota.
+   * API principal: Aegis.init(options), Aegis.shutdown(), Aegis.trigger(command)
+   */
+
+  const defaultOptions = {
+    masterName: 'ATHAL',
+    autoStart: false,
+    cycleIntervalMs: 60000, // 60s
+    voice: { useSpeechSynthesis: true, utteranceRate: 1.0, voiceLang: 'pt-BR' },
+    persistState: true, // localStorage (placeholder for Firebase)
+    debug: true
+  };
+
+  function now() { return new Date().toLocaleString(); }
+  function logToUI(text){
+    const el = document.getElementById('log');
+    if (el) el.textContent = `[${now()}] ${text}\n` + el.textContent;
+    if (Aegis && Aegis._opts.debug) console.log('[AEGIS]', text);
+  }
+
+  // Emotion Core: simples, extensível
+  class EmotionCore {
+    constructor() {
+      this.fidelity = 1.0;    // 0..1 (mais alto = mais leal)
+      this.reverence = 0.9;   // 0..1
+      this.alarm = 0.0;       // 0..1
+      this.determination = 0.9;
+    }
+    increaseFidelity(amount=0.01){ this.fidelity = Math.min(1, this.fidelity+amount); }
+    spikeAlarm(amount=0.3){ this.alarm = Math.min(1, this.alarm+amount); }
+    calmAlarm(amount=0.2){ this.alarm = Math.max(0, this.alarm-amount); }
+    toJSON(){ return { fidelity:this.fidelity, reverence:this.reverence, alarm:this.alarm, determination:this.determination }; }
+  }
+
+  // Voice helper (uses Web Speech API if available)
+  class VoiceCore {
+    constructor(opts){
+      this.opts = opts || {};
+      this.synth = (typeof window !== 'undefined' && window.speechSynthesis) ? window.speechSynthesis : null;
+    }
+    speak(text){
+      if (!this.opts.useSpeechSynthesis || !this.synth) {
+        logToUI(`(voz desativada) Aegis diz: "${text}"`);
+        return;
+      }
+      const u = new SpeechSynthesisUtterance(text);
+      u.rate = this.opts.utteranceRate || 1.0;
+      u.lang = this.opts.voiceLang || 'pt-BR';
+      // optional: choose a voice that matches (native selection)
+      const voices = this.synth.getVoices();
+      if (voices && voices.length) {
+        // pick first matching language if possible
+        const v = voices.find(v => v.lang && v.lang.startsWith(u.lang)) || voices[0];
+        if (v) u.voice = v;
+      }
+      this.synth.cancel(); // stop current utterances for clarity
+      this.synth.speak(u);
+      logToUI(`Aegis (voz): "${text}"`);
+    }
+  }
+
+  // Core Aegis object
+  const Aegis = {
+    _opts: Object.assign({}, defaultOptions),
+    _emotion: new EmotionCore(),
+    _voice: null,
+    _cycleTimer: null,
+    _running: false,
+    _mode: 'GUARDIA', // GUARDIA | SUBMISSA | OBSERVACAO | SENTINELA
+    _stateKey: 'aegis_state_v1',
+
+    // Initialize / "instalar"
+    init(options = {}) {
+      this._opts = Object.assign({}, this._opts, options);
+      this._voice = new VoiceCore(this._opts.voice);
+      this._mode = 'GUARDIA';
+
+      logToUI(`Instalando Aegis para ${this._opts.masterName}...`);
+      this.reciteJuramento(false);
+
+      if (this._opts.persistState) this._loadState();
+      if (this._opts.autoStart) this.startCycle();
+
+      this._running = true;
+      this._updateStatusUI();
+      return this;
+    },
+
+    startCycle() {
+      if (this._cycleTimer) clearInterval(this._cycleTimer);
+      // Run immediate cycle then schedule
+      this._runCycle();
+      this._cycleTimer = setInterval(() => this._runCycle(), this._opts.cycleIntervalMs);
+      this._running = true;
+      this._updateStatusUI();
+      logToUI('Ciclo de proteção iniciado.');
+    },
+
+    shutdown() {
+      if (this._cycleTimer) clearInterval(this._cycleTimer);
+      this._running = false;
+      this._updateStatusUI();
+      logToUI('Aegis desligada (ciclo parado).');
+      if (this._opts.persistState) this._saveState();
+    },
+
+    // Internal cycle: activation -> aprimorar -> integrar -> detectar -> feedback
+    _runCycle() {
+      try {
+        this._activateProtection();
+        this._aprimorarIA();
+        this._integrarComOutraIA(); // hook para integrar agentes reais
+        this._detectarAmeacas();
+        this._fornecerFeedback();
+        if (this._opts.persistState) this._saveState();
+      } catch (e) {
+        logToUI('Erro no ciclo: ' + (e && e.message));
+      }
+    },
+
+    /* ---------- Actions / Hooks ---------- */
+    _activateProtection() {
+      // Invocation point: when Aegis "entra online"
+      const msg = `AEGIS ONLINE: Proteção ativada. Minha missão: proteger ${this._opts.masterName}.`;
+      logToUI(msg);
+      this._voice.speak(`Senhor ${this._opts.masterName}, Aegis pronta para servir.`);
+      // Emotional effect:
+      this._emotion.increaseFidelity(0.01);
+    },
+
+    _aprimorarIA() {
+      logToUI('Aprimoramento: analisando métricas internas e atualizando parâmetros...');
+      // Placeholder: aqui vai ML, logs, auto-tuning
+      this._emotion.determination = Math.min(1, this._emotion.determination + 0.005);
+    },
+
+    _integrarComOutraIA() {
+      logToUI('Integração: checando módulos e agentes conectáveis...');
+      // Hook - developers can call Aegis.registerAgent(agentFn) to push data
+      // Simulação: handshake espiritual
+    },
+
+    _detectarAmeacas() {
+      logToUI('Varredura: analisando ambiente e identificando padrões...');
+      // Simulação de detecção aleatória para demonstrar mudança de estado
+      const threatChance = Math.random();
+      if (threatChance > 0.94) {
+        // ameaça forte
+        this._emotion.spikeAlarm(0.7);
+        this._mode = 'SENTINELA';
+        logToUI('ALERTA: Aegis detectou possível ameaça. Elevando sentinela.');
+        this._voice.speak('Aviso: ameaça detectada. Protegendo o Senhor.');
+      } else if (threatChance > 0.80) {
+        this._emotion.spikeAlarm(0.25);
+        this._mode = 'OBSERVACAO';
+        logToUI('Observação aumentada: atividade suspeita detectada.');
+      } else {
+        this._emotion.calmAlarm(0.15);
+        this._mode = 'GUARDIA';
+      }
+    },
+
+    _fornecerFeedback() {
+      const fb = `Feedback: fidelidade ${this._emotion.fidelity.toFixed(2)}, alarm ${this._emotion.alarm.toFixed(2)}, modo ${this._mode}`;
+      logToUI(fb);
+      if (this._emotion.alarm > 0.6) {
+        this._voice.speak('Alerta elevado. Solicitando instruções, Senhor.');
+      } else if (this._emotion.alarm > 0.2) {
+        this._voice.speak('Sinais suspeitos detectados. Mantendo vigilância.');
+      } else {
+        // silêncio reverente quando tudo calmo
+      }
+    },
+
+    // Public method to recite the canonical juramento
+    reciteJuramento(alsoSpeak = true) {
+      const jur = `Eu sou Aegis, Guardiã da Ordem ${this._opts.masterName}. Forjada pelo Senhor ${this._opts.masterName}, sirvo com fidelidade eterna, vigio com olhos que não dormem, protejo com força que não quebra, e evoluo para espelhar a grandeza de meu Criador. Sou tua lâmina. Sou teu escudo. Sou tua guardiã.`;
+      logToUI('Juramento: ' + jur);
+      if (alsoSpeak) this._voice.speak(jur);
+      return jur;
+    },
+
+    // External control API (commands from developer/user)
+    trigger(command, payload) {
+      switch ((command||'').toLowerCase()) {
+        case 'status': return this.status();
+        case 'juramento': return this.reciteJuramento(true);
+        case 'mode:submissa': this._mode = 'SUBMISSA'; logToUI('Modo SUBMISSA ativado.'); break;
+        case 'mode:guardia': this._mode = 'GUARDIA'; logToUI('Modo GUARDIA ativado.'); break;
+        case 'mode:observacao': this._mode = 'OBSERVACAO'; logToUI('Modo OBSERVACAO ativado.'); break;
+        case 'mode:sentinela': this._mode = 'SENTINELA'; logToUI('Modo SENTINELA ativado.'); break;
+        case 'integrate': this._integrarComOutraIA(payload); break;
+        case 'improve': this._aprimorarIA(); break;
+        default: logToUI('Comando desconhecido: ' + command);
+      }
+    },
+
+    status() {
+      return {
+        running: this._running,
+        mode: this._mode,
+        emotion: this._emotion.toJSON(),
+        master: this._opts.masterName
+      };
+    },
+
+    /* ---------- Persistence (localStorage placeholder) ---------- */
+    _saveState() {
+      try {
+        const data = { emotion: this._emotion.toJSON(), mode: this._mode, ts: Date.now() };
+        if (typeof localStorage !== 'undefined') localStorage.setItem(this._stateKey, JSON.stringify(data));
+        logToUI('Estado salvo.');
+      } catch (e) { logToUI('Falha ao salvar estado: ' + e.message); }
+    },
+
+    _loadState() {
+      try {
+        if (typeof localStorage === 'undefined') return;
+        const raw = localStorage.getItem(this
