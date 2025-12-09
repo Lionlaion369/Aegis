@@ -1,7 +1,0 @@
-module.exports = {
-    validarMestre: (nome) => {
-        return nome === "ATHAL_YAHARA"
-            ? { autorizado: true, mensagem: "Permissão total concedida." }
-            : { autorizado: false, mensagem: "Acesso negado. Apenas o Mestre Supremo pode comandar." };
-    }
-};
