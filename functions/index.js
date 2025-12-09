@@ -1,4 +1,5 @@
-// functions/index.js
+const AEGIS = require("./aegis");
+exports.AEGIS = AEGIS.AEGIS;// functions/index.js
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 
