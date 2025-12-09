@@ -24,3 +24,8 @@ module.exports = {
         };
     }
 };
+const salaUnificada = require('./sala_secreta/sala_secreta_unificada');
+const multiCall = require('./core/multi_call');
+
+module.exports.salaSecretaUnificada = salaUnificada;
+module.exports.chamarTodas = multiCall.chamarTodas;
