@@ -1,25 +1,16 @@
 module.exports = {
+
     ATHAL_YAHARA: {
-        invoke: () => {
-            return {
-                status: "ATIVADO",
-                message: "Aegis presente, mestre ATHAL_YAHARA.",
-                actions: [
-                    "Carregando protocolos",
-                    "Sincronizando com Willa Suprema IAG",
-                    "Aguardando novos comandos"
-                ]
-            };
-        }
+        invoke: () => ({
+            status: "ATIVADO",
+            mensagem: "Aegis responde ao Mestre Supremo ATHAL_YAHARA."
+        })
     },
 
     CHAMAR_SALA_SECRETA: {
-        invoke: () => {
-            return {
-                status: "ACESSO_CONCEDIDO",
-                message: "Entrada na Sala Secreta autorizada.",
-                action: "Conectando todas as IAs ao mestre."
-            };
-        }
+        invoke: () => ({
+            status: "INVOCACAO",
+            mensagem: "Aegis a caminho da Sala Secreta."
+        })
     }
 };
