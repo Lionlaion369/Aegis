@@ -1,4 +1,4 @@
-# Willa IA – Super Assistente Pessoal
+# Aegis IA – Super Assistente Pessoal
 
 Este repositório contém o código do projeto **willa-5b1ba**, uma IA Geral integrada com:
 - Flutter (app Android/iOS)
