@@ -1,0 +1,18 @@
+module.exports = {
+    verificarSistema: () => {
+        return {
+            status: "OK",
+            detalhes: "Nenhum erro encontrado.",
+            recomendado: "Continuar operação.",
+            autorizacaoNecessaria: false
+        };
+    },
+
+    detectarErro: (erro) => {
+        return {
+            status: "ERRO_DETECTADO",
+            erro: erro,
+            mensagem: "Aegis solicita autorização para correção."
+        };
+    }
+};
