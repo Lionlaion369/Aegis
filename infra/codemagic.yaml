@@ -1,0 +1,17 @@
+workflows:
+  default-workflow:
+    name: Willa-IA Build
+    environment:
+      flutter: stable
+      node: 18.0.0
+      vars:
+        OPENAI_API_KEY: $OPENAI_API_KEY
+        FIREBASE_API_KEY: $FIREBASE_API_KEY
+    scripts:
+      - cd server && npm install
+      - cd app && flutter pub get
+    artifacts:
+      - app/build/app/outputs/flutter-apk/app-release.apk
+    publishing:
+      scripts:
+        - echo "Build finalizado!"
