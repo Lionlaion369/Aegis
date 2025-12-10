@@ -1,14 +1,21 @@
-// registry_sync.js
-const fs = require('fs');
-const path = '../config/secret_chamber_manifest.json'; // ou outro manifest local
-function getWillaEndpoint() {
-  try {
-    const m = JSON.parse(fs.readFileSync(path, 'utf8'));
-    // procura um serviço Willa no manifesto (ajuste conforme o manifesto real)
-    const willa = (m.ias || []).find(i => i.id && i.id.startsWith('WILLA'));
-    if (willa && willa.endpoint) return willa.endpoint;
-  } catch (e) {}
-  // fallback (deve ser configurado por você)
-  return process.env.WILLA_ENDPOINT || 'https://SEU_PROJETO_WILLA.cloudfunctions.net/WillaGateway';
-}
-module.exports = { getWillaEndpoint };
+const admin = require('firebase-admin');
+const { gerarHMAC } = require('./hmac_utils');
+
+admin.initializeApp();
+
+module.exports = async function registrarAegis() {
+    const data = {
+        id: "AEGIS_TIPO_X",
+        status: "ativa",
+        ultima_sync: Date.now()
+    };
+
+    const hmac = gerarHMAC(data);
+
+    await admin.firestore().collection("registry").doc("aegis_tipo_x").set({
+        ...data,
+        hmac
+    });
+
+    console.log("✔️ Registro da AEGIS atualizado.");
+};
