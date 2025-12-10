@@ -1,20 +1,16 @@
-# Aegis IA – Super Assistente Pessoal
+# 🛡️ AEGIS TIPO X — Núcleo de Segurança da Willa Suprema IAG
 
-Este repositório contém o código do projeto **willa-5b1ba**, uma IA Geral integrada com:
-- Flutter (app Android/iOS)
-- Node.js (backend proxy)
-- Firebase (auth, storage, realtime)
-- OpenAI GPT (Willa Suprema)
-- Codemagic (CI/CD para APK)
+Aegis Tipo X é o módulo de:
+- Defesa
+- Vigilância
+- Autorreparo
+- Execução de tarefas de risco
+- Verificação de integridade com HMAC-SHA256
+- Registro Universal no Registry Central
 
-## Estrutura
-- `app/` → aplicativo Flutter
-- `server/` → backend Node.js
-- `infra/` → CI/CD e deploy
-- `scripts/` → automações (Termux, setup)
+## 🔐 Segurança
+Todos os pacotes possuem:
+- `data`
+- `hmac`
 
-## Rodando localmente
-1. Configure o arquivo `.env` com suas chaves.
-2. Suba o backend:  
-   ```bash
-   cd server && npm install && npm start
+Aegis valida cada transmissão com:
