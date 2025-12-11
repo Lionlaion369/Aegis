@@ -1,7 +1,10 @@
+// diagnostico_integrado.js
+// AEGIS TIPO X — DIAGNÓSTICO INTEGRADO REAL
+
 const diagnosticoInterno = require("./diagnostico_interno");
 const diagnosticoExterno = require("./diagnostico_externo");
 
-module.exports = async function diagnosticoIntegrado() {
+module.exports.ativarDiagnosticoIntegrado = async () => {
     console.log("\n=== 🔥 DIAGNÓSTICO INTEGRADO AEGIS TIPO X ===");
 
     const interno = await diagnosticoInterno();
