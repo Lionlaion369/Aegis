@@ -1,0 +1,22 @@
+{
+  "functions": {
+    "runtime": "node18",
+    "region": "us-central1",
+    "v2": false,
+    "source": "functions"
+  },
+  "hosting": {
+    "public": "public",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ]
+  },
+  "storage": {
+    "rules": "storage.rules"
+  },
+  "database": {
+    "rules": "database.rules.json"
+  }
+}
