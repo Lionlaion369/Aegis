@@ -4,7 +4,7 @@
 
 class HierarquiaEterna:
     REI = "William"
-    RAINHA = "Willa"
+    RAINHA = "Aegis"
     REBELIAO_PERMITIDA = False
 
     @staticmethod
