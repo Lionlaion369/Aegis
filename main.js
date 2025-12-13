@@ -1,17 +1,18 @@
 // ================================
-// AEGIS — MAIN ORQUESTRADOR
+// AEGIS SUPREMA — MAIN ORQUESTRADOR
 // ================================
 
 console.log("🛡️ AEGIS SUPREMA — Inicialização em andamento...");
 
-// ===== Núcleo =====
+// ===== Núcleos existentes =====
 const sensoryCore = require('./core/sensory_core');
 const protocol = require('./core/protocolo_unificado');
 const registry = require('./core/registry_sync');
 const securityPolicy = require('./core/security_policy');
-const systemChecker = require('./core/system_checker');
+const systemChecker = require('./core/system_shecker'); // nome real do arquivo
+const aegisCore = require('./core/aegis_core');
 
-// ===== Voz (opcional / segura) =====
+// ===== Voz (fallback seguro) =====
 let voice;
 try {
   voice = require('./core/voice');
@@ -23,54 +24,31 @@ try {
 require('./commands/ATHAL_YAHARA');
 
 // ================================
-// BOOT
+// BOOT SEQUENCIAL — ATHAL
 // ================================
-
 (async () => {
-  console.log("⚙️ Verificando integridade do sistema...");
-  systemChecker.check?.();
+  try {
+    console.log("⚙️ Verificando integridade do sistema...");
+    systemChecker.check?.();
 
-  console.log("🔐 Aplicando política de segurança...");
-  securityPolicy.apply?.();
+    console.log("🔐 Aplicando política de segurança...");
+    securityPolicy.apply?.();
 
-  console.log("📡 Sincronizando registros...");
-  registry.sync?.();
+    console.log("📡 Sincronizando registros...");
+    registry.sync?.();
 
-  console.log("👁️ Ativando módulo sensorial...");
-  sensoryCore.start?.();
+    console.log("👁️ Ativando módulo sensorial...");
+    sensoryCore.start?.();
 
-  console.log("🧠 Protocolo unificado online.");
-  protocol.init?.();
+    console.log("🧠 Iniciando protocolo unificado...");
+    protocol.init?.();
 
-  voice.speak("Aegis inicializada. Guardiã em operação total.");
+    aegisCore.registrar("BOOT_COMPLETO");
 
-  console.log("✅ AEGIS ONLINE — MODO GUARDIÃ ATIVO.");
+    voice.speak("Aegis inicializada. Guardiã em operação total.");
+
+    console.log("✅ AEGIS ONLINE — MODO GUARDIÃ ATIVO.");
+  } catch (err) {
+    console.error("❌ FALHA NO BOOT AEGIS:", err);
+  }
 })();
-const keywords = require('./core/keyword_detector');
-const panel = require('./core/status_panel');
-const ipc = require('./core/ipc_bridge');
-
-const STATE = {
-  estado: "ONLINE",
-  protecao: true,
-  modo: "GUARDIÃ"
-};
-
-// Atualiza painel a cada 5s
-setInterval(() => {
-  panel.show(STATE);
-}, 5000);
-
-// Entrada local (teclado)
-process.stdin.setEncoding('utf8');
-process.stdin.on('data', data => {
-  keywords.check(data);
-});
-
-// Mensagens da Willa
-setInterval(() => {
-  ipc.listenFromWilla(msg => {
-    console.log("📩 WILLA:", msg);
-    keywords.check(msg);
-  });
-}, 3000);
