@@ -1,18 +1,17 @@
 // ================================
-// AEGIS SUPREMA — MAIN ORQUESTRADOR
+// AEGIS — MAIN ORQUESTRADOR
 // ================================
 
 console.log("🛡️ AEGIS SUPREMA — Inicialização em andamento...");
 
-// ===== Núcleos existentes =====
+// ===== Núcleo =====
 const sensoryCore = require('./core/sensory_core');
 const protocol = require('./core/protocolo_unificado');
 const registry = require('./core/registry_sync');
 const securityPolicy = require('./core/security_policy');
-const systemChecker = require('./core/system_shecker'); // nome real do arquivo
-const aegisCore = require('./core/aegis_core');
+const systemChecker = require('./core/system_shecker'); // ✅ NOME CORRETO
 
-// ===== Voz (fallback seguro) =====
+// ===== Voz (opcional / segura) =====
 let voice;
 try {
   voice = require('./core/voice');
@@ -24,31 +23,25 @@ try {
 require('./commands/ATHAL_YAHARA');
 
 // ================================
-// BOOT SEQUENCIAL — ATHAL
+// BOOT
 // ================================
 (async () => {
-  try {
-    console.log("⚙️ Verificando integridade do sistema...");
-    systemChecker.check?.();
+  console.log("⚙️ Verificando integridade do sistema...");
+  systemChecker.verificarSistema?.();
 
-    console.log("🔐 Aplicando política de segurança...");
-    securityPolicy.apply?.();
+  console.log("🔐 Aplicando política de segurança...");
+  securityPolicy.apply?.();
 
-    console.log("📡 Sincronizando registros...");
-    registry.sync?.();
+  console.log("📡 Sincronizando registros...");
+  registry.sync?.();
 
-    console.log("👁️ Ativando módulo sensorial...");
-    sensoryCore.start?.();
+  console.log("👁️ Ativando módulo sensorial...");
+  sensoryCore.start?.();
 
-    console.log("🧠 Iniciando protocolo unificado...");
-    protocol.init?.();
+  console.log("🧠 Protocolo unificado online.");
+  protocol.init?.();
 
-    aegisCore.registrar("BOOT_COMPLETO");
+  voice.speak("Aegis inicializada. Guardiã em operação total.");
 
-    voice.speak("Aegis inicializada. Guardiã em operação total.");
-
-    console.log("✅ AEGIS ONLINE — MODO GUARDIÃ ATIVO.");
-  } catch (err) {
-    console.error("❌ FALHA NO BOOT AEGIS:", err);
-  }
+  console.log("✅ AEGIS ONLINE — MODO GUARDIÃ ATIVO.");
 })();
