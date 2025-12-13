@@ -1,4 +1,4 @@
-const fs = require('fs');
+7const fs = require('fs');
 
 const CHANNEL = '/tmp/aegis_willa_channel.json';
 
@@ -17,4 +17,18 @@ module.exports = {
     const data = JSON.parse(fs.readFileSync(CHANNEL));
     if (data.from === "WILLA") cb(data.msg);
   }
+};
+module.exports.listenFromWilla = function(cb) {
+  const fs = require('fs');
+  const CHANNEL = '/tmp/aegis_willa_channel.json';
+
+  if (!fs.existsSync(CHANNEL)) return;
+
+  try {
+    const data = JSON.parse(fs.readFileSync(CHANNEL));
+    if (data.from === "WILLA" && data.msg) {
+      cb(data.msg);
+      fs.unlinkSync(CHANNEL); // evita loop
+    }
+  } catch {}
 };
