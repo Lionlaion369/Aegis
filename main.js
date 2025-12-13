@@ -46,3 +46,31 @@ require('./commands/ATHAL_YAHARA');
 
   console.log("✅ AEGIS ONLINE — MODO GUARDIÃ ATIVO.");
 })();
+const keywords = require('./core/keyword_detector');
+const panel = require('./core/status_panel');
+const ipc = require('./core/ipc_bridge');
+
+const STATE = {
+  estado: "ONLINE",
+  protecao: true,
+  modo: "GUARDIÃ"
+};
+
+// Atualiza painel a cada 5s
+setInterval(() => {
+  panel.show(STATE);
+}, 5000);
+
+// Entrada local (teclado)
+process.stdin.setEncoding('utf8');
+process.stdin.on('data', data => {
+  keywords.check(data);
+});
+
+// Mensagens da Willa
+setInterval(() => {
+  ipc.listenFromWilla(msg => {
+    console.log("📩 WILLA:", msg);
+    keywords.check(msg);
+  });
+}, 3000);
