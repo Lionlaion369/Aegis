@@ -1,0 +1,9 @@
+{
+  "name": "aegis-local",
+  "version": "1.0.0",
+  "main": "main.js",
+  "type": "commonjs",
+  "dependencies": {
+    "node-fetch": "^3.3.2"
+  }
+}
