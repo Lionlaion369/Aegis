@@ -1,7 +1,14 @@
 // ================================
 // AEGIS — MAIN ORQUESTRADOR
 // ================================
-
+function safeRequire(path, fallback = {}) {
+  try {
+    return require(path);
+  } catch (e) {
+    console.warn(`⚠️ Módulo ausente ignorado: ${path}`);
+    return fallback;
+  }
+}
 console.log("🛡️ AEGIS SUPREMA — Inicialização em andamento...");
 
 // ===== Núcleos =====
